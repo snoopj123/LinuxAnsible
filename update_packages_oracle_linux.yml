@@ -1,0 +1,25 @@
+---
+- name: Configure Oracle Linux base packages
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure EPEL is available
+      ansible.builtin.dnf:
+        name: oracle-epel-release-el9
+        state: present
+    
+    - name:  Install extra packages
+      ansible.builtin.dnf:
+        name:
+          - vim
+          - git
+          - curl
+          - wget
+          - tmux
+        state: present
+
+    - name: Update all packages to the latest version
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest
+      register: update_result
