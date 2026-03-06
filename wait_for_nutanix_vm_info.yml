@@ -1,0 +1,45 @@
+---
+- name: Wait for Nutanix VM Information
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Wait for VM information to be available from Nutanix API
+      ansible.builtin.uri:
+        url: "https://{{ nutanix_host }}:9440/api/vmm/v4.2/ahv/config/vms/{{ deployed_vm_extId }}"
+        method: GET
+        user: "{{ nutanix_username }}"
+        password: "{{ nutanix_password }}"
+        validate_certs: false
+        force_basic_auth: true
+        status_code: 200
+      register: vm_info
+      until: >
+        vm_info.json.data.guestTools.guestInfo.dnsName.value is defined and
+        "jvh.local" in vm_info.json.data.guestTools.guestInfo.dnsName.value
+      retries: 25
+      delay: 15
+
+    - name: Display VM FDQN and VM IP Address
+      ansible.builtin.debug:
+        msg: >
+          VM FQDN: {{ vm_info.json.data.guestTools.guestInfo.dnsName.value }},
+          VM IP: {{ vm_info.json.data.nics[0].nicNetworkInfo.ipv4Info.learnedIpAddresses[0].value }}
+
+    - name: Wait for WinRM to be available on the VM
+      ansible.builtin.wait_for:
+        host: "{{ vm_info.json.data.guestTools.guestInfo.dnsName.value }}"
+        port: 5985
+        delay: 15
+        timeout: 300
+        state: started
+
+    - name: Display message indicating WinRM is available
+      ansible.builtin.debug:
+        msg: "WinRM is now available on the VM. Proceeding with the playbook execution."
+
+    - name: Return VM IP address
+      ansible.builtin.set_stats:
+        data:
+          vm_ip: "{{ vm_info.json.data.nics[0].nicNetworkInfo.ipv4Info.learnedIpAddresses[0].value }}"
+        per_host: false
