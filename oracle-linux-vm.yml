@@ -92,7 +92,7 @@
 
     - name: Print VM extId
       ansible.builtin.debug:
-        msg: "Deployed VM extId: {{ deployed_vm_extId }}"
+        msg: "Deployed VM extId: {{ vm_info.response[0].ext_id }}"
 
     - name: Power on Oracle Linux VM
       nutanix.ncp.ntnx_vms_power_actions_v2:
