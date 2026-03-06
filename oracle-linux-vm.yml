@@ -85,8 +85,10 @@
       register: vm_info
 
     - name: Store VM extId as a fact
-      ansible.builtin.set_fact:
-        deployed_vm_extId: "{{ vm_info.response[0].ext_id }}"
+      ansible.builtin.set_stats:
+        data:
+          deployed_vm_extId: "{{ vm_info.response[0].ext_id }}"
+        per_host: false
 
     - name: Power on Oracle Linux VM
       nutanix.ncp.ntnx_vms_power_actions_v2:
