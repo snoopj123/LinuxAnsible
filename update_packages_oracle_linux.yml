@@ -1,6 +1,7 @@
 ---
 - name: Configure Oracle Linux base packages
   hosts: all
+  gather_facts: false
   become: true
   tasks:
     - name: Ensure EPEL is available
