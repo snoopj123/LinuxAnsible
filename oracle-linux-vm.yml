@@ -90,6 +90,10 @@
           deployed_vm_extId: "{{ vm_info.response[0].ext_id }}"
         per_host: false
 
+    - name: Print VM extId
+      ansible.builtin.debug:
+        msg: "Deployed VM extId: {{ deployed_vm_extId }}"
+
     - name: Power on Oracle Linux VM
       nutanix.ncp.ntnx_vms_power_actions_v2:
         ext_id: "{{ deployed_vm_extId }}"
