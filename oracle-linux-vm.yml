@@ -1,0 +1,95 @@
+---
+- name: Use Nutanix Ansible Collection to Get Oracle Linux Template Information
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Get Oracle Linux Template Information
+      nutanix.ncp.ntnx_templates_info_v2:
+        validate_certs: false
+        filter: "templateName eq 'oracle-linux-9.7'"
+      register: template_info
+ 
+    - name: Save Template extId as a fact
+      ansible.builtin.set_fact:
+        oracle_linux_template_extId: "{{ template_info.response[0].ext_id }}"
+
+    - name: Render cloud-init script for Oracle Linux Template
+      ansible.builtin.set_fact:
+        cloud_init_script: |
+          #cloud-config
+          hostname: "{{ vm_name }}"
+          fqdn: "{{ vm_name }}.jvh.local"
+          users:
+          - name: ansible
+            sudo: ALL=(ALL) NOPASSWD:ALL
+            lock_passwd: true
+          - name: adminuser
+            sudo: ALL=(ALL) NOPASSWD:ALL
+            lock_passwd: true
+          chpasswd:
+            list: |
+              ansible:$6$jCR7CLYbuy4mLO3Z$Hnp5tA9wf2Wo.xg.W.nJCZYDrsLX/HXqK9B3tuhgVF2jfdQDZAEkvbR/uxwPqbARz6lzZp5EgQoCRFOktwjBC.
+              adminuser:$6$jCR7CLYbuy4mLO3Z$Hnp5tA9wf2Wo.xg.W.nJCZYDrsLX/HXqK9B3tuhgVF2jfdQDZAEkvbR/uxwPqbARz6lzZp5EgQoCRFOktwjBC.
+            expire: false
+          ssh_pwauth: true
+          growpart:
+            mode: auto
+            devices: ['/']
+          resize_rootfs: true
+          timezone: America/Los_Angeles
+          runcmd:
+            - systemctl enable --now sshd
+
+    - name: Get Cluster Information
+      nutanix.ncp.ntnx_clusters_info_v2:
+        filter: "name eq 'ucs-ntnx'"
+        validate_certs: false
+      register: cluster_results
+
+    - name: Set fact for target cluster ID
+      ansible.builtin.set_fact:
+        target_cluster_id: "{{ cluster_results.response[0].ext_id }}"
+
+    - name: Retrieve Template Version
+      nutanix.ncp.ntnx_templates_info_v2:
+        ext_id: "{{ oracle_linux_template_extId }}"
+        validate_certs: false
+      register: template_details
+
+    - name: Set Template Version Id as a fact
+      ansible.builtin.set_fact:
+        template_version_id: "{{ template_details.response.template_version_spec.ext_id }}"
+    
+    - name: Create Nutanix VM using the Oracle Linux Template
+      nutanix.ncp.ntnx_templates_deploy_v2:
+        validate_certs: "{{ validate_certs }}"
+        ext_id: "{{ oracle_linux_template_extId }}"
+        cluster_reference: "{{ target_cluster_id }}"
+        version_id: "{{ template_version_id }}"
+        number_of_vms: 1
+        override_vms_config:
+          - name: "{{ vm_name }}"
+            guest_customization:
+              config:
+                cloudinit:
+                  cloud_init_script:
+                    user_data:
+                      value: "{{ cloud_init_script | b64encode }}"
+      register: deploy_result
+
+    - name: Get VM extId
+      nutanix.ncp.ntnx_vms_info_v2:
+        validate_certs: false
+        filter: "name eq '{{ vm_name }}'"
+      register: vm_info
+
+    - name: Store VM extId as a fact
+      ansible.builtin.set_fact:
+        deployed_vm_extId: "{{ vm_info.response[0].ext_id }}"
+
+    - name: Power on Oracle Linux VM
+      nutanix.ncp.ntnx_vms_power_actions_v2:
+        ext_id: "{{ deployed_vm_extId }}"
+        state: "power_on"
+        validate_certs: false
