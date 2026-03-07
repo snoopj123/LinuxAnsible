@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-    - name: Wait for VM information to be available from Nutanix API
+    - name: Wait for VM information to be available from Nutanix Prism
       nutanix.ncp.ntnx_vms_info_v2:
         ext_id: "{{ deployed_vm_extId }}"
         validate_certs: false
