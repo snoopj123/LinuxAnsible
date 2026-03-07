@@ -14,6 +14,7 @@
         vm_info.response.guest_tools is defined and
         vm_info.response.guest_tools.guest_info is defined and
         vm_info.response.guest_tools.guest_info.dns_name is defined and
+        vm_info.response.guest_tools.guest_info.dns_name.value is defined and
         "jvh.local" in vm_info.response.guest_tools.guest_info.dns_name.value
       retries: 25
       delay: 15
