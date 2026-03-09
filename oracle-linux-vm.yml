@@ -92,7 +92,7 @@
     
     - name: Set Storage Container extId as a fact
       ansible.builtin.set_fact:
-        storage_container_extId: "{{ storage_container_info.response[0].ext_id }}"
+        storage_container_extId: "{{ storage_container_info.response[0].container_ext_id }}"
 
     - name: Add 100GB Data Disk 1 to {{ vm_name }}
       nutanix.ncp.ntnx_vms_disks_v2:
