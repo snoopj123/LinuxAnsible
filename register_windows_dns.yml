@@ -1,0 +1,23 @@
+---
+- name: Register DNS Records on Windows DNS Server
+  hosts: windows_dns
+  gather_facts: false
+
+  tasks:
+    - name: Create A Record for {{ vm_name }} in {{ dns_zone }}
+      community.windows.win_dns_record:
+        name: "{{ vm_name }}"
+        type: A
+        value: "{{ vm_ip }}"
+        zone: "{{ dns_zone }}"
+        state: present
+        ttl: "{{ dns_ttl | default(3600) }}"
+
+    - name: Create PTR Record for {{ vm_ip }} in {{ dns_reverse_zone }}
+      community.windows.win_dns_record:
+        name: "{{ vm_ip.split('.')[-1] }}"
+        type: PTR
+        value: "{{ vm_name }}.{{ dns_zone }}"
+        zone: "{{ dns_reverse_zone }}"
+        state: present
+        ttl: "{{ dns_ttl | default(3600) }}"
