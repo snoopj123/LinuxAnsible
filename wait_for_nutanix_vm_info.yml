@@ -29,4 +29,5 @@
       ansible.builtin.set_stats:
         data:
           vm_ip: "{{ vm_info.response.nics[0].nic_network_info.ipv4_info.learned_ip_addresses[0].value }}"
+          vm_fqdn: "{{ vm_info.response.guest_tools.guest_info.dns_name.value }}"
         per_host: false
