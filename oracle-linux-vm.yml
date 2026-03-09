@@ -84,25 +84,45 @@
       ansible.builtin.set_fact:
         vm_extId: "{{ vm_info.response[0].ext_id }}"
 
+    - name: Fetch Storage Container Information
+      nutanix.ncp.ntnx_storage_containers_info_v2:
+        validate_certs: false
+        filter: "name eq 'slc6-c60r3-n3-a28-25'"
+      register: storage_container_info
+    
+    - name: Set Storage Container extId as a fact
+      ansible.builtin.set_fact:
+        storage_container_extId: "{{ storage_container_info.response[0].ext_id }}"
+
     - name: Add 100GB Data Disk 1 to {{ vm_name }}
       nutanix.ncp.ntnx_vms_disks_v2:
         vm_ext_id: "{{ vm_extId }}"
-        disk_size_bytes: 107374182400
+        backing_info:
+          vm_disk:
+            disk_size_bytes: 107374182400
+            storage_container:
+              ext_id: "{{ storage_container_extId }}"
         disk_address:
           bus_type: SCSI
           index: 1
         validate_certs: false
         state: present
+        wait: true
 
     - name: Add 100GB Data Disk 2 to {{ vm_name }}
       nutanix.ncp.ntnx_vms_disks_v2:
         vm_ext_id: "{{ vm_extId }}"
-        disk_size_bytes: 107374182400
+        backing_info:
+          vm_disk:
+            disk_size_bytes: 107374182400
+            storage_container:
+              ext_id: "{{ storage_container_extId }}"
         disk_address:
           bus_type: SCSI
           index: 2
         validate_certs: false
         state: present
+        wait: true
 
     - name: Power on Oracle Linux VM
       nutanix.ncp.ntnx_vms_power_actions_v2:
