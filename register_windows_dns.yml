@@ -1,6 +1,6 @@
 ---
 - name: Register DNS Records on Windows DNS Server
-  hosts: windows_dns
+  hosts: all
   gather_facts: false
 
   tasks:
