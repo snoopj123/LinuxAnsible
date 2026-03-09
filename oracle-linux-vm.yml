@@ -24,13 +24,9 @@
           - name: ansible
             sudo: ALL=(ALL) NOPASSWD:ALL
             lock_passwd: true
-          - name: adminuser
-            sudo: ALL=(ALL) NOPASSWD:ALL
-            lock_passwd: true
           chpasswd:
             list: |
               ansible:$6$jCR7CLYbuy4mLO3Z$Hnp5tA9wf2Wo.xg.W.nJCZYDrsLX/HXqK9B3tuhgVF2jfdQDZAEkvbR/uxwPqbARz6lzZp5EgQoCRFOktwjBC.
-              adminuser:$6$jCR7CLYbuy4mLO3Z$Hnp5tA9wf2Wo.xg.W.nJCZYDrsLX/HXqK9B3tuhgVF2jfdQDZAEkvbR/uxwPqbARz6lzZp5EgQoCRFOktwjBC.
             expire: false
           ssh_pwauth: true
           growpart:
