@@ -84,6 +84,26 @@
       ansible.builtin.set_fact:
         vm_extId: "{{ vm_info.response[0].ext_id }}"
 
+    - name: Add 100GB Data Disk 1 to {{ vm_name }}
+      nutanix.ncp.ntnx_vms_disks_v2:
+        vm_ext_id: "{{ vm_extId }}"
+        disk_size_bytes: 107374182400
+        disk_address:
+          bus_type: SCSI
+          index: 1
+        validate_certs: false
+        state: present
+
+    - name: Add 100GB Data Disk 2 to {{ vm_name }}
+      nutanix.ncp.ntnx_vms_disks_v2:
+        vm_ext_id: "{{ vm_extId }}"
+        disk_size_bytes: 107374182400
+        disk_address:
+          bus_type: SCSI
+          index: 2
+        validate_certs: false
+        state: present
+
     - name: Power on Oracle Linux VM
       nutanix.ncp.ntnx_vms_power_actions_v2:
         ext_id: "{{ vm_extId }}"
