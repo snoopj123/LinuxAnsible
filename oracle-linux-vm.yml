@@ -94,7 +94,7 @@
       ansible.builtin.set_fact:
         storage_container_extId: "{{ storage_container_info.response[0].container_ext_id }}"
 
-    - name: Add 100GB Data Disk 1 to {{ vm_name }}
+    - name: Add 100GB Data Disk 1 to {{ vm_name }} to storage container {{ storage_container_extId }}
       nutanix.ncp.ntnx_vms_disks_v2:
         vm_ext_id: "{{ vm_extId }}"
         backing_info:
@@ -109,7 +109,7 @@
         state: present
         wait: true
 
-    - name: Add 100GB Data Disk 2 to {{ vm_name }}
+    - name: Add 100GB Data Disk 2 to {{ vm_name }} to storage container {{ storage_container_extId }}
       nutanix.ncp.ntnx_vms_disks_v2:
         vm_ext_id: "{{ vm_extId }}"
         backing_info:
