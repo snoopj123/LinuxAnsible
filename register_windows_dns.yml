@@ -4,6 +4,11 @@
   gather_facts: false
 
   tasks:
+    - name: Set variables for DNS registration
+      ansible.builtin.set_fact:
+        dns_zone: "jvh.local"
+        dns_ttl: 3600
+    
     - name: Create A Record for {{ vm_name }} in {{ dns_zone }}
       community.windows.win_dns_record:
         name: "{{ vm_name }}"
