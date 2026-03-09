@@ -15,7 +15,7 @@
         vm_ip: "{{ vm_ip }}"
     
     - name: Create A Record for {{ vm_name }} in {{ dns_zone }}
-      community.windows.win_dns_record:
+      ansible.windows.win_dns_record:
         name: "{{ vm_name }}"
         type: A
         value: "{{ vm_ip }}"
