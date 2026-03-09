@@ -11,8 +11,10 @@
 
     - name: Set variables for VM Name and IP address
       ansible.builtin.set_fact:
-        vm_name: "{{ vm_fqdn.split('.')[0] }}"
-        vm_ip: "{{ vm_ip }}"
+        #vm_name: "{{ vm_fqdn.split('.')[0] }}"
+        #vm_ip: "{{ vm_ip }}"
+        vm_name: "testvm"
+        vm_ip: "10.21.153.240"
     
     - name: Create A Record for {{ vm_name }} in {{ dns_zone }}
       community.windows.win_dns_record:
