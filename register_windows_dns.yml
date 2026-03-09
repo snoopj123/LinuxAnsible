@@ -8,6 +8,11 @@
       ansible.builtin.set_fact:
         dns_zone: "jvh.local"
         dns_ttl: 3600
+
+    - name: Set variables for VM Name and IP address
+      ansible.builtin.set_fact:
+        vm_name: "{{ vm_fqdn.split('.')[0] }}"
+        vm_ip: "{{ vm_ip }}"
     
     - name: Create A Record for {{ vm_name }} in {{ dns_zone }}
       community.windows.win_dns_record:
