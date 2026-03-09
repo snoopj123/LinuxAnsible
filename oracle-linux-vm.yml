@@ -18,6 +18,29 @@
       ansible.builtin.set_fact:
         cloud_init_script: |
           #cloud-config
+          disk_setup:
+            /dev/sdb:
+              table_type: gpt
+              layout: true
+              overwrite: false
+            /dev/sdc:
+              table_type: gpt
+              layout: true
+              overwrite: false
+          fs_setup:
+            - label: u01
+              device: /dev/sdb
+              filesystem: xfs
+              partition: auto
+              overwrite: false
+            - label: u02
+              device: /dev/sdc
+              filesystem: xfs
+              partition: auto
+              overwrite: false
+          mounts:
+            - ["/dev/sdb1", "/u01", "xfs", "defaults,noatime,nodiratime", "0", "2"]
+            - ["/dev/sdc1", "/u02", "xfs", "defaults,noatime,nodiratime", "0", "2"]
           hostname: "{{ vm_name }}"
           fqdn: "{{ vm_name }}.jvh.local"
           users:
