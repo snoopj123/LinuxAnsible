@@ -43,13 +43,30 @@
             - ["/dev/sdc1", "/u02", "xfs", "defaults,noatime,nodiratime", "0", "2"]
           hostname: "{{ vm_name }}"
           fqdn: "{{ vm_name }}.jvh.local"
+          groups:
+            - oinstall
+            - dba
+            - oper
+            - backupdba
+            - dgdba
+            - kmdba
+            - racdba
           users:
+          - name: oracle
+            gecos: Oracle Software Owner
+            primary_group: oinstall
+            groups: dba, oper, backupdba, dgdba, kmdba, racdba
+            shell: /bin/bash
+            system: false
+            lock_passwd: true
+            sudo: false
           - name: ansible
             sudo: ALL=(ALL) NOPASSWD:ALL
             lock_passwd: true
           chpasswd:
             list: |
               ansible:$6$jCR7CLYbuy4mLO3Z$Hnp5tA9wf2Wo.xg.W.nJCZYDrsLX/HXqK9B3tuhgVF2jfdQDZAEkvbR/uxwPqbARz6lzZp5EgQoCRFOktwjBC.
+              oracle:$6$jCR7CLYbuy4mLO3Z$Hnp5tA9wf2Wo.xg.W.nJCZYDrsLX/HXqK9B3tuhgVF2jfdQDZAEkvbR/uxwPqbARz6lzZp5EgQoCRFOktwjBC.
             expire: false
           ssh_pwauth: true
           growpart:
